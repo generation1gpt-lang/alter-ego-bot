@@ -263,7 +263,7 @@ async def get_ai_reply(chat_id: int, user_name: str, user_text: str, voice_mode:
         histories[chat_id] = [histories[chat_id][0]] + histories[chat_id][-20:]
 
     response = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
+        model="llama-3.1-8b-instant",
         messages=histories[chat_id],
         max_tokens=400,
         temperature=0.95,
@@ -313,14 +313,17 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(reply)
 
 def main():
-    print("✦ Alter Ego (Даник) запущен.")
-    print(f"✦ Триггеры чат: {', '.join(TRIGGER_WORDS)}")
-    print(f"✦ Триггеры голос: {', '.join(VOICE_TRIGGERS)}")
-    print("✦ Авто-голосовое каждые 7 сообщений")
-    app = ApplicationBuilder().token(BOT_TOKEN).build()
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
-    app.add_handler(CallbackQueryHandler(handle_casino_callback))
-    app.run_polling()
+    import time
+    while True:
+        try:
+            print("✦ Alter Ego (Даник) запущен.")
+            app = ApplicationBuilder().token(BOT_TOKEN).build()
+            app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+            app.add_handler(CallbackQueryHandler(handle_casino_callback))
+            app.run_polling()
+        except Exception as e:
+            print(f"Ошибка: {e}. Перезапуск через 10 секунд...")
+            time.sleep(10)
 
 if __name__ == "__main__":
     main()
